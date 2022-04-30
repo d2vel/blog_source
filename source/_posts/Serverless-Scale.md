@@ -23,12 +23,60 @@ categories:
 
 {% asset_img serverless_services.png This is an example image %}
 
-AWS 서비스들을 보면 그 중심에 Lambda가 있습니다. 당연히 서버리스를 사용해서 서비스를 만든다면 일단 이들에 대해서 정확하게 하는 것이 필요합니다. 
+AWS 서비스들을 보면 그 중심에 Lambda가 있습니다. 당연히 서버리스를 사용해서 서비스를 만든다면 일단 이들에 대해서 정확하게 하는 것이 필요합니다.
 
 ### 서버리스 도입 및 운영의 장점
 
+서버리스는 일반적으로 다른 서비스에 비해 일반적인 상황에서 운영에 대해 고려할 것이 적습니다. 실제 시스템의 패치 및 부하에 따른 고려, 또한 시스템의 구성 등에 시간이 적게 들어갑니다. 대표적인 서버리스 compute 컴포넌트인 lambda의 경우를 예를 들어 설명해 보면 Serverless Framework이나 SAM을 활용하면 매우 짧은 시간 안에 시스템의 구성이 가능합니다.
+
+또한 Dyanmodb / Amplify / Cognito 등과 같이 사용을 할 때는, Compute 뿐만 아니라 Database / Auth들의 구현도 매우 짧은 시간 안에 구현할 수 있습니다.
+
+{% asset_img 2022-04-30T173334.png This is an example image %}
+
 ### 서버리스를 도입할 때 고려해야 할 것들
 
-#### 경우에 따라서는 스케일이 제한될 수 있다. 
+하지만 일반적인 상황에서 서버리스가 매우 빠른 다른 이야기 입니다. 갑작스럽게 부하게 엄청 많이 증가하는 상황이라든지 혹은 엄청 연산이나 처리가 길어지는 경우에는 컨드롤하기 어려운 단점이 존재합니다. 또한 lambda의 경우는 요청 수행시간에 따라 Concurrency가 매우 많은 영향을 받습니다. 또한 기본적으로 Account Quota가 아래와 같이 설정되어 있습니다.
 
-#### 관리하지 않는다는 것은 Customizing이 쉽지 않다는 이야기
+| Resource                                                                                                                                                                                                                                                  |                  Default quota | Can be increased up to |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -----------------------------: | :--------------------: |
+| Concurrent executions                                                                                                                                                                                                                                     |                          1,000 |   Tens of thousands    |
+| Storage for uploaded functions (.zip file archives) and layers. Each function version and layer version consumes storage. <br /><br /> For best practices on managing your code storage, see Monitoring Lambda code storage in the Lambda Operator Guide. |                          75 GB |       Terabytes        |
+| Storage for functions defined as container images. These images are stored in Amazon ECR.                                                                                                                                                                 | See Amazon ECR service quotas. |                        |
+| Elastic network interfaces per virtual private cloud (VPC)<br />Note<br />This quota is shared with other services, such as Amazon Elastic File System (Amazon EFS). See Amazon VPC quotas.                                                               |                            250 |        Hundreds        |
+
+위와 같이 스케일이 제한되어 있기 때문에 특별히 Burst 상황이 생길 여지가 있는 곳에서는 고려해야 할 것 들이 생기게 됩니다. 아래는 특별히 lambda의 부하 및 구성관점에서 어떠한 것들을 고려해야 하는지 알아보도록 하겠다.
+
+#### 큰 API는 Lambda를 Account로 분리해야 한다.
+
+{% asset_img 2022-04-30T175208.png This is an example image %}
+
+https://aws.amazon.com/ko/blogs/compute/managing-cross-account-serverless-microservices/ 참조
+
+위와 같이 Account로 분리해서 부하를 받아줄 수 있도록 분산해야 합니다. 하지만 이를 위해서 CI/CD Pipeline 구성의 복잡도를 포함해야 합니다. 이에 대해서는 아래와 같이 좀더 자세히 기술하도록 하겠습니다.
+
+#### 짧은 Lambda 수행시간
+
+1,000 Concurrency는 많은 수이지만 경우에 따라서는 매우 작은 숫자일 수도 있습니다.이 한계 안에서 Lambda를 활용하기 위해서는 Lambda의 수행시간을 가능하면 짧게 가져가야 합니다. 이를 위해서 EDA(Event Driven Architecure)와 함께 Nosql(Dynamodb)를 활용하여 처리시간을 짧게 가져가야 합니다.
+
+{% asset_img 2022-04-30T180532.png This is an example image %}
+
+참고: https://aws.amazon.com/ko/blogs/compute/operating-lambda-understanding-event-driven-architecture-part-1/
+
+#### Cold Start
+
+{% codeblock lang:javascript %}
+const AWS = require('aws-sdk');
+// http or https
+const http = require('http');
+const agent = new http.Agent({
+    keepAlive: true,
+    // Infinity is read as 50 sockets
+    maxSockets: Infinity
+    });
+
+AWS.config.update({
+    httpOptions: {
+    agent
+    }
+});
+{% endcodeblock %}
