@@ -9,7 +9,10 @@ categories:
   - AWS
 ---
 
-{% asset_img hurdle.jpg This is an example image %}
+{% asset_img hurdle.jpg 허들이미지 %}
+
+이번에는 서버리스를 도입하고 운영하기 위해서 어떤 점들을 고려해봐야 하는지에 대해서 작성해 보았습니다. 
+<!-- more -->
 
 이번에는 서버리스에 대해서 한번 살펴보고자 한다. 대학교 때부터 이런 이야기를 IT에서 자주 들어왔던 것 같다. 뭔가를 동작하게 하는 것은 쉽지만 잘 동작하게 하는 것은 매우 어려운 일이다. 이것은 특히 회사에서 공감을 많이 하게 되는 말이었다. 회사에서 항상 뭔가를 하다보면 POC/BMT 레벨에서는 문제가 없었지만 실제 운영에서는 문제가 생기는 경우를 많이 보았다. 대부분은 생각하지 못했던 예외 케이스와 미리 생각하지 못했던 부하에서 문제많이 생겼다.
 
@@ -64,6 +67,10 @@ https://aws.amazon.com/ko/blogs/compute/managing-cross-account-serverless-micros
 
 #### Cold Start
 
+Lambda의 경우 기본적으로 내부적으로는 Container를 활용하기 때문에 실제로는 서버가 필요합니다. 실제 요청을 받고 서버가 준비되기 전까지의 시간이 필요하며, 이를 Cold Start라고 합니다. 요청이 매우 빨리 늘어나는 경우에는 Cold Start가 서비스에 영향을 미칠 수도 있습니다. 그렇기 때문에 이를 줄이기 위한 노력이 필요합니다. 여러가지가 있지만 지금은 이것을 위해서 가능한 패키지 되는 용량이 작아야 하며, 가능한 무겁지 않도록 프로그램을 작성해야 하다 정도를 생각하시면 됩니다. 추후 다른 아티클에서 어떻게 Cold Start를 제거 하는지 확인해보도록 하겠습니다.'
+
+#### 짧은 수행시간을 위한 Tip
+
 {% codeblock lang:javascript %}
 const AWS = require('aws-sdk');
 // http or https
@@ -80,3 +87,7 @@ AWS.config.update({
     }
 });
 {% endcodeblock %}
+
+#### Multi acount Ci/cd 구성
+
+#### Lambda의 배포 Dependency의 해결
