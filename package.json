@@ -32,5 +32,8 @@
     "inferno": "^7.4.11",
     "inferno-create-element": "^7.4.11",
     "markdown-it-named-headings": "^1.1.0"
+  },
+  "devDependencies": {
+    "hexo-typora-image": "^0.1.2"
   }
 }

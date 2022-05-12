@@ -24,7 +24,7 @@ categories:
 
 많은 CSP등 혹은 K8S도 서버리스에 대한 서비스를 제공하고 있습니다.
 
-{% asset_img serverless_services.png This is an example image %}
+ç
 
 AWS 서비스들을 보면 그 중심에 Lambda가 있습니다. 당연히 서버리스를 사용해서 서비스를 만든다면 일단 이들에 대해서 정확하게 하는 것이 필요합니다.
 
