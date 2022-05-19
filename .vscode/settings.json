@@ -1,0 +1,17 @@
+{
+    "serverlessConsole.services": [
+        {
+            "type": "cloudformation",
+            "title": "EMART",
+            "timeOffsetInMs": 0,
+            "awsProfile": "sam",
+            "stacks": [
+                {
+                    "region": "ap-northeast-2",
+                    "stackName": "hanjin-backend",
+                    "stage": "dev"
+                }
+            ]
+        }
+    ]
+}
