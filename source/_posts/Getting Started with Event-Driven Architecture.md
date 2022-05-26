@@ -65,13 +65,21 @@ categories:
 Decoupled 된 아키텍쳐는 팀이 독집적으로 행동할 수 있게 해주고 이는 개발 속도를 증가시킨다. 예를 들어 API를 기반으로 한 통합에서는 만약 내 팀이 다른 팀의 마이크로서비스에서 일어나는 변경에 대해서 알기를 원한다면 나는 나의 서비스를 위해서 그 팀이 만드는 API에 대해서 물어봐야 한다. 이것은 나는 다른 팀과 인증을 적절하게 처리해야 하며, 다른 팀과 API 호출을 위한 구조들에 대한 협의가 필요하다는 것을 의미합니다. 이것은 팀 사이를 왔다갔다하는 것을 야기시키며, 개발속도를 낮춥니다. 이벤트 주도적인 아키텍쳐에서는 마이크로서비스나 이벤트의 라우팅을 처리하고, 인증을 처리해주는 이벤트 라우터(예를 들어, Amazon EventBridge) 로부터 이벤트를 구독합니다.
 
 Decoupled 어플리케이션은 새로운 기능을 보다 빨리 개발할 수 있게 합니다. 새로운 기능을 추가하는 것과 기존에 있는 기능을 확징하는 것은 이벤트 주도적인 아키텍쳐에서는 보다 간단한 일입니다. 새로운 기능을 실행하고 구독하는 데 필요한 이벤트만 선택하면 되기 때문입니다. 새로운 기능을 추가하기 위해 기존 서비스를 수정할 필요가 없습니다.
- 
+
 ### Write less code
 
-When you build applications using event-driven architecture, often you write less code because you only need to consider new events, as well as which service is subscribed to those events. For example, if you are building new features for your application, all you have to do is consider the existing events and then add senders and receivers as necessary. In this way, you speed up development time because each functional unit is smaller and there is often less code.
+Event-driven Architecture를 사용하여 애플리케이션을 만들 때 우리는 새로운 이벤트와 그 이벤트를 구독하는 서비스만 고려하면 되기 때문에 좀 더 적은 코드를 작성한다. 예를 들어, 애플리케이션에 새로운 기능을 만든 다면, 기존에 존재하는 이벤트를 고려한 후 이벤트 sender와 receiver을 추가하면 된다. 이렇게 하면 각 Functional Unit의 단위가 작고 작성되는 코드량이 작기 때문에 개발의 시간을 단축할 수 있다.
 
 ### Better extensibility
 
+위의 예제와 같이 배울 확장성 있는 애플리케이션을 만들었다. 다른 팀은 다른 마이크로 서비스에 영향을 미치지 않고 Feature를 확장할 수 있고, 기능을 추가할 수 있다. EventBridge를 사용하여 이벤트를 Publish 하므로, 애플리케이션은 기존 시스템과 통합될 뿐 아니라 모든 애플리케이션이 이벤트 Consumer로 통합될 수 있도록 합니다. 이벤트의 Producers는 이벤트 Consumer를 알지 못한다는 것은 마이크로서비스의 로직을 매우 단순화 할 수 있습니다.
+
 ### Enhancing team collaboration
 
+애플리케이션을 작성하는 일반적인 프로세스는 제품관리자와 비즈니스 이해 관계자와 협력하여 요구 사항을 수집하는 것입니다. 그리고 나서 개발자들은 이러한 요구사항으로부터 코드를 작성합니다. 그러나 이런 개발프로세스에서는 제품의 요구사항과 코드 사이에 간격이 존재합니다. 이벤트를 사용할 때, 비즈니스에 속한 모든 사람들은 로직을 이해할 수 있습니다. 애플리케이션에서 발생하는 이벤트(예를 들어, 고객이 물건을 카트에 담는다거나 고객 계정을 생성하거나)를 정의하면 그것은 제품의 요구사항이 됩니다. 어떠한 Action이 발생할 때마다, 그것은 이벤트를 만들어내고, 관심있는 사람은 누구나 그 Event에 대하여 로직을 수행하게 할 수 있습니다.
+
+만약, 마케팅 담당자가 고객이 새로운 계정을 만들 때마다 어떠한 업무로직들을 수행할 수 있습니다. Event-Driven Architectur에서 이러한 것들을 구현하는 한 가지 방법은 새로운 계정 생성 이벤트를 수신하는 마케팅 이벤트 버스를 사용하는 것입니다. 또한 해당 이벤트를 구독하는 분석팀과 같이 관심이 있는 다른 팀이 있을 수도 있습니다. 각각의 팀/서비스는 그들과 관련이 있는 이벤트를 구독할 수 있습니다. Event-Driven Architecture는 비즈니스를 수행하는 사람들이 그들이 비즈니스를 표한할 수 있는 좋은 방법입니다.
+
 ## 결론
+
+이 게시물에서는 이벤트를 소개하고 이벤트 기반 아키텍처를 명령 기반 요청-응답 아키텍처와 비교합니다. 또한 이벤트 소스 및 대상 분리, 코드 작성 감소, 확장성 향상, 팀 협업 향상 등 이벤트 기반 아키텍처의 이점에 대해 설명합니다.
